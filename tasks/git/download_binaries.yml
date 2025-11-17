@@ -1,0 +1,22 @@
+---
+- name: Get latest release of a public repository
+  ansible.builtin.uri:
+    url: "https://api.github.com/repos/{{ repo.value.repo | regex_search('github.com/(.*)\\.git', '\\1') | first }}/releases/latest"
+    return_content: true
+  register: json_response
+
+- name: "{{ 'Create Directory: ' ~ repo.key }}"
+  ansible.builtin.file:
+    path: "{{ binaries_dir }}/{{ repo.key }}"
+    state: directory
+    mode: "744"
+
+- name: Download Asset
+  ansible.builtin.get_url:
+    url: "{{ item.browser_download_url }}"
+    dest: "{{ binaries_dir }}/{{ repo.key }}/"
+    mode: "744"
+  when: "item.browser_download_url | regex_search( repo.value.filter )"
+  loop: "{{ json_response.json.assets }}"
+  loop_control:
+    label: "{{ item.browser_download_url | basename }}"

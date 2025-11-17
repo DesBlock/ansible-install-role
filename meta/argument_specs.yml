@@ -1,0 +1,80 @@
+---
+argument_specs:
+  main:
+    short_description: ""
+    options:
+      install_reboot:
+        type: bool
+        required: false
+        default: false
+        description: ""
+      install_apt_autoremove:
+        type: bool
+        required: false
+        default: false
+        description: ""
+      install_apt_packages:
+        type: list
+        required: false
+        description: ""
+      install_apt_update:
+        type: bool
+        required: false
+        default: false
+        description: ""
+      install_apt_upgrade:
+        type: str
+        required: false
+        default: "no"
+        choices:
+          - "dist"
+          - "full"
+          - "no"
+          - "safe"
+          - "yes"
+        description: ""
+      install_git:
+        type: bool
+        required: false
+        default: false
+        description: ""
+      install_git_dir:
+        type: str
+        required: false
+        default: "{{ ansible_env.HOME ~ '/Tools' }}"
+        description: ""
+      install_git_repos:
+        type: dict
+        required: false
+        description: ""
+      install_git_releases:
+        type: dict
+        required: false
+        description: ""
+      install_golang:
+        type: bool
+        required: false
+        default: false
+        description: ""
+      install_golang_packages:
+        type: dict
+        required: false
+        description: ""
+      install_pipx:
+        type: bool
+        required: false
+        default: false
+        description: ""
+      install_pipx_packages:
+        type: dict
+        required: false
+        description: ""
+      isntall_rust:
+        type: bool
+        required: false
+        default: false
+        description: ""
+      install_rust_packages:
+        type: list
+        required: false
+        description: ""

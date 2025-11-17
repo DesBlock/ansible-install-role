@@ -1,0 +1,54 @@
+---
+- name: Install Rust
+  when: install_rust is true
+  block:
+    - name: Remove rustc and cargo installed with apt.
+      ansible.builtin.apt:
+        name:
+          - cargo
+          - rustc
+        state: absent
+        purge: true
+      register: install_rust_purge
+      become: true
+      failed_when:
+        - install_rust_purge.failed is true
+        - '"No package(s) matching" not in install_rust_purge.msg'
+
+    - name: Check if rustup is installed
+      ansible.builtin.command:
+        cmd: which rustup
+      register: install_rustup_exists
+      changed_when: false
+      failed_when: install_rustup_exists.stderr | length > 0
+
+    - name: Download RustUp Installer
+      ansible.builtin.get_url:
+        url: https://sh.rustup.rs
+        dest: /tmp/sh.rustup.rs
+        mode: "0755"
+        force: "yes"
+      when: install_rustup_exists.stdout | length == 0
+
+    - name: Install rust/cargo
+      ansible.builtin.command:
+        cmd: /tmp/sh.rustup.rs -y
+      register: install_rust_complete
+      changed_when: '"Rust is installed now" in install_rust_complete.stdout'
+      when: install_rustup_exists.stdout | length == 0
+
+    - name: Update Rust
+      ansible.builtin.command:
+        cmd: "rustup update"
+      environment:
+        PATH: "{{ ansible_env.PATH ~ ':' ~ ansible_env.HOME ~ '/.cargo/bin' }}"
+      register: install_rustup_update
+      changed_when: "'updated' in install_rustup_update.stdout"
+      when: install_rustup_exists.stdout | length > 0
+
+- name: Install Rust packages with cargo
+  community.general.cargo:
+    name: "{{ install_rust_packages }}"
+    executable: "{{ ansible_env.HOME ~ '/.cargo/bin/cargo' }}"
+    state: latest
+  when: install_rust_packages is defined

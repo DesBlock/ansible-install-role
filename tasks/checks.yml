@@ -1,0 +1,12 @@
+---
+- name: Check for global shell configuration files
+  block:
+    - name: Check for bash.bashrc
+      ansible.builtin.stat:
+        path: "/etc/bash.bashrc"
+      register: install_bashrc_file
+
+    - name: Check for zshrc
+      ansible.builtin.stat:
+        path: "/etc/zsh/zshrc"
+      register: install_zshrc_file

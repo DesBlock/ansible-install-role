@@ -1,0 +1,21 @@
+---
+# General Defaults
+install_reboot: false
+
+# APT Defaults
+install_apt_autoremove: false
+install_apt_update: false
+install_apt_upgrade: "no"
+
+# Git Defaults
+install_git: false
+install_git_dir: "{{ ansible_env.HOME ~ '/Tools' }}"
+
+# GoLang Defaults
+install_golang: false
+
+# Pipx Defaults
+install_pipx: false
+
+# Rust Defaults
+install_rust: false

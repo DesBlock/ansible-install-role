@@ -1,0 +1,42 @@
+---
+- name: Ensure git is installed
+  ansible.builtin.apt:
+    name: git
+  become: true
+  when: install_git is true
+
+- name: Clone Git Repos
+  when: ([install_git_repos is defined, install_git_releases is defined] is any) is true
+  block:
+    - name: Create Tools Directory
+      ansible.builtin.file:
+        path: "{{ install_git_dir }}"
+        state: directory
+        mode: "0755"
+
+    - name: Download GitHub Release Binaries Into Tools Directory
+      ansible.builtin.include_tasks: "git/download_binaries.yaml"
+      loop: "{{ install_git_releases | dict2items }}"
+      loop_control:
+        loop_var: repo
+      when: install_git_releases is defined
+
+    - name: Check for Github Release Vars that have Clone Enabled
+      ansible.builtin.set_fact:
+        install_git_repos: "{{ (install_git_repos | default({})) | combine({item.key: item.value}) }}"
+      loop: "{{ install_git_releases | dict2items }}"
+      when:
+        - item.value.clone is true
+        - install_git_releases is defined
+
+    - name: Git Clone Repos Into Tools Directory
+      ansible.builtin.git:
+        repo: "{{ item.value.repo }}"
+        dest: "{{ item.value.dest | default(install_git_dir) }}/{{ item.key }}"
+        version: "{{ item.value.version | default('HEAD') }}"
+        depth: "{{ item.value.depth | default(omit) }}"
+      loop: "{{ install_git_repos | dict2items }}"
+      register: git_clone_results
+      become: "{{ item.value.become | default(false) }}"
+      failed_when: git_clone_results.failed and not 'Local modifications exist' in git_clone_results.msg
+      when: install_git_repos is defined

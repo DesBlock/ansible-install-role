@@ -1,0 +1,85 @@
+---
+- name: Install GoLang
+  when: install_golang is true
+  block:
+    - name: Remove GoLang installed with apt.
+      ansible.builtin.apt:
+        name: "golang-*"
+        state: absent
+        purge: true
+      register: install_golang_purge
+      become: true
+      failed_when:
+        - install_golang_purge.failed is true
+        - '"No package(s) matching" not in install_golang_purge.msg'
+
+    - name: Check installed version of GoLang
+      ansible.builtin.command: /usr/local/go/bin/go version
+      register: install_golang_version
+      changed_when: false
+      failed_when: false
+
+    - name: Get the latest GoLang release version
+      ansible.builtin.uri:
+        url: "https://go.dev/VERSION?m=text"
+        return_content: true
+      register: install_golang_release_version_raw
+
+    - name: Set Release GoLang Version
+      ansible.builtin.set_fact:
+        install_golang_release_version: "{{ install_golang_release_version_raw.content | regex_replace('\n.*','') }}"
+
+    - name: Remove Old GoLang Version
+      ansible.builtin.file:
+        path: /usr/local/go
+        state: absent
+      become: true
+      register: install_golang_remove
+      when: "install_golang_release_version not in install_golang_version.stdout"
+
+    - name: Install GoLang
+      when: install_golang_remove.changed or install_golang_version.stdout | length == 0
+      become: true
+      block:
+        - name: Print GoLang Versions
+          ansible.builtin.debug:
+            msg: |-
+              "Release:   {{ install_golang_release_version }}
+              Installed: {{ install_golang_version.stdout }}"
+
+        - name: Download Latest GoLang
+          ansible.builtin.get_url:
+            url: "https://go.dev/dl/{{ install_golang_release_version }}.linux-amd64.tar.gz"
+            dest: "/tmp/{{ install_golang_release_version }}.linux-amd64.tar.gz"
+            mode: "644"
+
+        - name: Extract tarball {{ install_golang_release_version }}
+          ansible.builtin.unarchive:
+            src: "/tmp/{{ install_golang_release_version }}.linux-amd64.tar.gz"
+            dest: "/usr/local"
+            mode: "755"
+            remote_src: true
+
+        - name: Ensure GoLang Path is in .bashrc
+          ansible.builtin.blockinfile:
+            path: "install_bashrc_file.stat.path"
+            block: |
+              export PATH=$PATH:/usr/local/go/bin
+          when: install_bashrc_file.stat.exists
+
+        - name: Ensure GoLang Path is in .zshrc
+          ansible.builtin.blockinfile:
+            path: "install_zshrc_file.stat.path"
+            block: |
+              export PATH=$PATH:/usr/local/go/bin
+          when: install_zshrc_file.stat.exists
+
+- name: Install GoLang Packages
+  ansible.builtin.command:
+    cmd: "go install {{ item.value }}"
+  environment:
+    PATH: "{{ ansible_env['PATH'] ~ ':/usr/local/go/bin' }}"
+  loop: "{{ lookup('ansible.builtin.dict', golang_packages) }}"
+  register: "install_golang_package_result"
+  changed_when: "'downloading' in install_golang_package_result.stderr"
+  when: install_golang_packages is defined

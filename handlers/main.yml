@@ -1,0 +1,6 @@
+---
+# handlers file for install
+- name: Reboot_Host
+  ansible.builtin.reboot:
+    msg: "Rebooting host as requested by install ansible role."
+  become: true

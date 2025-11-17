@@ -1,0 +1,51 @@
+---
+# Check for various files and configurations.
+- name: Include Check Tasks
+  ansible.builtin.include_tasks:
+    file: "checks.yml"
+
+# Apt
+- name: Include Apt Tasks
+  ansible.builtin.include_tasks:
+    file: "apt.yml"
+  when: ([install_apt_autoremove, install_apt_update, install_apt_upgrade != 'no', install_apt_packages is defined] is any) is true
+
+# Git
+- name: Incluide Git Tasks
+  ansible.builtin.include_tasks:
+    file: "git/git.yml"
+  when: ([install_git, install_git_repos is defined, install_git_releases is defined] is any) is true
+
+# GoLang
+- name: Include GoLang Tasks
+  ansible.builtin.include_tasks:
+    file: "golang.yml"
+  when: ([install_golang, install_apt_packages is defined] is any) is true
+
+# Rust / Cargo
+- name: Include Rust Tasks
+  ansible.builtin.include_tasks:
+    file: "rust.yml"
+  when: ([install_rust, install_rust_packages is defined] is any) is true
+
+# Pipx
+- name: Include Pipx Tasks
+  ansible.builtin.include_tasks:
+    file: "pipx.yml"
+  when: ([install_pipx, install_pipx_packages is defined] is any) is true
+
+- name: Check for Reboot
+  ansible.builtin.stat:
+    path: "/var/run/reboot-required"
+  register: install_reboot_required
+
+- name: Reboot
+  ansible.builtin.debug:
+    msg: "A reboot is required, {{ ansible_hostname }} will now reboot."
+  notify: Reboot_Host
+  when: install_reboot_required.stat.exists and install_reboot is true
+
+- name: Notify of Reboot
+  ansible.builtin.debug:
+    msg: "A reboot is required, please do so at your earliest convenience."
+  when: install_reboot_required.stat.exists and install_reboot is false

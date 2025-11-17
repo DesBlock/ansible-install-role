@@ -1,0 +1,57 @@
+---
+
+- name: Wait until apt lock is released
+  ansible.builtin.shell:
+    cmd: lsof -w /var/lib/apt/lists/lock | wc -l # noqa risky-shell-pipe
+  register: install_apt_lock
+  until: install_apt_lock.stdout == "0"
+  retries: 100
+  delay: 10
+  changed_when: false
+
+- name: Wait until apt lock_frontend is released
+  ansible.builtin.shell:
+    cmd: lsof -w /var/lib/dpkg/lock-frontend | wc -l # noqa risky-shell-pipe
+  register: install_apt_lock_frontend
+  until: install_apt_lock_frontend.stdout == "0"
+  retries: 100
+  delay: 10
+  changed_when: false
+
+- name: Update apt repository cache
+  ansible.builtin.apt:
+    update_cache: "{{ install_apt_update }}"
+  become: true
+  when: install_apt_update is true
+
+- name: Upgrade all apt packages
+  ansible.builtin.apt:
+    upgrade: "{{ install_apt_upgrade }}"
+  register: install_apt_upgrade_status
+  become: true
+  async: 5000
+  poll: 0
+
+  when: install_apt_upgrade != 'no'
+
+- name: Check if apt upgrade is complete
+  ansible.builtin.async_status:
+    jid: "{{ install_apt_upgrade_status.ansible_job_id }}"
+  register: install_apt_upgrade_result
+  until: install_apt_upgrade_result.finished
+  retries: 150
+  delay: 10
+  become: true
+  when: install_apt_upgrade != 'no'
+
+- name: Install Apt Packages
+  ansible.builtin.apt:
+    name: "{{ install_apt_packages }}"
+  become: true
+  when: install_apt_packages is defined
+
+- name: Autoremove Old Apt Packages
+  ansible.builtin.apt:
+    autoremove: "{{ install_apt_autoremove }}"
+  become: true
+  when: install_apt_autoremove is true
