@@ -1,5 +1,5 @@
 
-# Ansible Install Role
+Ansible Install Role
 =========
 
 Ansible role used to quickly install various tools and packages with a variety of different package managers.
@@ -31,7 +31,7 @@ Including an example of how to use your role (for instance, with variables passe
 License
 -------
 
-BSD
+MIT
 
 Author Information
 ------------------
