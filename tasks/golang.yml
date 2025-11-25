@@ -62,14 +62,14 @@
 
         - name: Ensure GoLang Path is in .bashrc
           ansible.builtin.blockinfile:
-            path: "install_bashrc_file.stat.path"
+            path: "{{ install_bashrc_file.stat.path }}"
             block: |
               export PATH=$PATH:/usr/local/go/bin
           when: install_bashrc_file.stat.exists
 
         - name: Ensure GoLang Path is in .zshrc
           ansible.builtin.blockinfile:
-            path: "install_zshrc_file.stat.path"
+            path: "{{ install_zshrc_file.stat.path }}"
             block: |
               export PATH=$PATH:/usr/local/go/bin
           when: install_zshrc_file.stat.exists
@@ -79,7 +79,7 @@
     cmd: "go install {{ item.value }}"
   environment:
     PATH: "{{ ansible_env['PATH'] ~ ':/usr/local/go/bin' }}"
-  loop: "{{ lookup('ansible.builtin.dict', golang_packages) }}"
+  loop: "{{ lookup('ansible.builtin.dict', install_golang_packages) }}"
   register: "install_golang_package_result"
   changed_when: "'downloading' in install_golang_package_result.stderr"
   when: install_golang_packages is defined
