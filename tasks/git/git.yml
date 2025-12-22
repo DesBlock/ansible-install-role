@@ -16,7 +16,7 @@
 
     - name: Download GitHub Release Binaries Into Tools Directory
       ansible.builtin.include_tasks: "git/download_binaries.yml"
-      loop: "{{ install_git_releases | dict2items | defailt([]) }}"
+      loop: "{{ install_git_releases | dict2items | default([]) }}"
       loop_control:
         loop_var: repo
       when: install_git_releases is defined
