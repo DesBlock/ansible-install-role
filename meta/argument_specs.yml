@@ -41,7 +41,7 @@ argument_specs:
       install_git_dir:
         type: str
         required: false
-        default: "{{ ansible_env.HOME ~ '/Tools' }}"
+        default: "{{ ansible_facts['env']['HOME'] ~ '/Tools' }}"
         description: ""
       install_git_repos:
         type: dict

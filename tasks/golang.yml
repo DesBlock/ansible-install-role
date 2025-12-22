@@ -62,17 +62,17 @@
 
         - name: Ensure GoLang Path is in .bashrc
           ansible.builtin.blockinfile:
-            path: "{{ install_bashrc_file.stat.path }}"
+            path: "{{ install_bashrc_gloabl_file.stat.path }}"
             block: |
               export PATH=$PATH:/usr/local/go/bin
-          when: install_bashrc_file.stat.exists
+          when: install_bashrc_gloabl_file.stat.exists
 
         - name: Ensure GoLang Path is in .zshrc
           ansible.builtin.blockinfile:
-            path: "{{ install_zshrc_file.stat.path }}"
+            path: "{{ install_zshrc_global_file.stat.path }}"
             block: |
               export PATH=$PATH:/usr/local/go/bin
-          when: install_zshrc_file.stat.exists
+          when: install_zshrc_global_file.stat.exists
 
 - name: Install GoLang Packages
   ansible.builtin.command:

@@ -32,7 +32,7 @@
 
     - name: Install rust/cargo
       ansible.builtin.command:
-        cmd: /tmp/sh.rustup.rs -y
+        cmd: /tmp/sh.rustup.rs -y --default-toolchain stable
       register: install_rust_complete
       changed_when: '"Rust is installed now" in install_rust_complete.stdout'
       when: install_rustup_exists.stdout | length == 0
@@ -41,7 +41,7 @@
       ansible.builtin.command:
         cmd: "rustup update"
       environment:
-        PATH: "{{ ansible_env.PATH ~ ':' ~ ansible_env.HOME ~ '/.cargo/bin' }}"
+        PATH: "{{ ansible_facts['env']['PATH'] ~ ':' ~ ansible_facts['env']['HOME'] ~ '/.cargo/bin' }}"
       register: install_rustup_update
       changed_when: "'updated' in install_rustup_update.stdout"
       when: install_rustup_exists.stdout | length > 0
@@ -49,6 +49,6 @@
 - name: Install Rust packages with cargo
   community.general.cargo:
     name: "{{ install_rust_packages }}"
-    executable: "{{ ansible_env.HOME ~ '/.cargo/bin/cargo' }}"
+    executable: "{{ ansible_facts['env']['HOME'] ~ '/.cargo/bin/cargo' }}"
     state: latest
   when: install_rust_packages is defined

@@ -7,16 +7,16 @@
 
 - name: "{{ 'Create Directory: ' ~ repo.key }}"
   ansible.builtin.file:
-    path: "{{ binaries_dir }}/{{ repo.key }}"
+    path: "{{ install_git_binaries_dir }}/{{ repo.key }}"
     state: directory
     mode: "744"
 
 - name: Download Asset
   ansible.builtin.get_url:
     url: "{{ item.browser_download_url }}"
-    dest: "{{ binaries_dir }}/{{ repo.key }}/"
+    dest: "{{ install_git_binaries_dir }}/{{ repo.key }}/"
     mode: "744"
-  when: "item.browser_download_url | regex_search( repo.value.filter )"
+  when: "item.browser_download_url | regex_search( repo.value.filter ) != None"
   loop: "{{ json_response.json.assets }}"
   loop_control:
     label: "{{ item.browser_download_url | basename }}"

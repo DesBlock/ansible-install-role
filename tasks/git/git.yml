@@ -15,8 +15,8 @@
         mode: "0755"
 
     - name: Download GitHub Release Binaries Into Tools Directory
-      ansible.builtin.include_tasks: "git/download_binaries.yaml"
-      loop: "{{ install_git_releases | dict2items }}"
+      ansible.builtin.include_tasks: "git/download_binaries.yml"
+      loop: "{{ install_git_releases | dict2items | defailt([]) }}"
       loop_control:
         loop_var: repo
       when: install_git_releases is defined
@@ -24,9 +24,9 @@
     - name: Check for Github Release Vars that have Clone Enabled
       ansible.builtin.set_fact:
         install_git_repos: "{{ (install_git_repos | default({})) | combine({item.key: item.value}) }}"
-      loop: "{{ install_git_releases | dict2items }}"
+      loop: "{{ install_git_releases | dict2items | default([]) }}"
       when:
-        - item.value.clone is true
+        - "'clone' in item.value.keys()"
         - install_git_releases is defined
 
     - name: Git Clone Repos Into Tools Directory
@@ -35,7 +35,7 @@
         dest: "{{ item.value.dest | default(install_git_dir) }}/{{ item.key }}"
         version: "{{ item.value.version | default('HEAD') }}"
         depth: "{{ item.value.depth | default(omit) }}"
-      loop: "{{ install_git_repos | dict2items }}"
+      loop: "{{ install_git_repos | dict2items | default([]) }}"
       register: git_clone_results
       become: "{{ item.value.become | default(false) }}"
       failed_when: git_clone_results.failed and not 'Local modifications exist' in git_clone_results.msg

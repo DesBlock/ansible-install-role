@@ -4,9 +4,9 @@
     - name: Check for bash.bashrc
       ansible.builtin.stat:
         path: "/etc/bash.bashrc"
-      register: install_bashrc_file
+      register: install_bashrc_global_file
 
     - name: Check for zshrc
       ansible.builtin.stat:
         path: "/etc/zsh/zshrc"
-      register: install_zshrc_file
+      register: install_zshrc_global_file

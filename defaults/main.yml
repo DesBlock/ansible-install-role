@@ -9,7 +9,8 @@ install_apt_upgrade: "no"
 
 # Git Defaults
 install_git: false
-install_git_dir: "{{ ansible_env.HOME ~ '/Tools' }}"
+install_git_dir: "{{ ansible_facts['env']['HOME'] ~ '/Tools' }}"
+install_git_binaries_dir: "{{ install_git_dir ~ '/Binaries' }}"
 
 # GoLang Defaults
 install_golang: false
