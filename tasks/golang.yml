@@ -78,7 +78,7 @@
   ansible.builtin.command:
     cmd: "go install {{ item.value }}"
   environment:
-    PATH: "{{ ansible_env['PATH'] ~ ':/usr/local/go/bin' }}"
+    PATH: "{{ ansible_facts['env']['PATH'] ~ ':/usr/local/go/bin' }}"
   loop: "{{ lookup('ansible.builtin.dict', install_golang_packages) }}"
   register: "install_golang_package_result"
   changed_when: "'downloading' in install_golang_package_result.stderr"
