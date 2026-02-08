@@ -28,6 +28,7 @@
     - name: Set Release GoLang Version
       ansible.builtin.set_fact:
         install_golang_release_version: "{{ install_golang_release_version_raw.content | regex_replace('\n.*','') }}"
+        install_golang_arch: "{{ 'arm64' if ansible_facts.architecture == 'aarch64' else 'amd64' }}"
 
     - name: Remove Old GoLang Version
       ansible.builtin.file:
@@ -49,13 +50,13 @@
 
         - name: Download Latest GoLang
           ansible.builtin.get_url:
-            url: "https://go.dev/dl/{{ install_golang_release_version }}.linux-amd64.tar.gz"
-            dest: "/tmp/{{ install_golang_release_version }}.linux-amd64.tar.gz"
+            url: "https://go.dev/dl/{{ install_golang_release_version }}.linux-{{ install_golang_arch }}.tar.gz"
+            dest: "/tmp/{{ install_golang_release_version }}.linux-{{ install_golang_arch }}.tar.gz"
             mode: "644"
 
         - name: Extract tarball {{ install_golang_release_version }}
           ansible.builtin.unarchive:
-            src: "/tmp/{{ install_golang_release_version }}.linux-amd64.tar.gz"
+            src: "/tmp/{{ install_golang_release_version }}.linux-{{ install_golang_arch }}.tar.gz"
             dest: "/usr/local"
             mode: "755"
             remote_src: true
