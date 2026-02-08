@@ -1,0 +1,12 @@
+---
+- name: Ensure Ruby Is Installed
+  ansible.builtin.apt:
+    name: ruby
+  become: true
+  when: install_ruby is true
+
+- name: Install Ruby Packages
+  community.general.gem:
+    name: "{{ install_ruby_packages }}"
+    state: latest
+  when: install_ruby_packages is defined

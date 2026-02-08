@@ -34,6 +34,12 @@
     file: "pipx.yml"
   when: ([install_pipx, install_pipx_packages is defined] is any) is true
 
+# Ruby
+- name: Include Ruby Tasks
+  ansible.builtin.include_tasks:
+    file: "ruby.yml"
+  when: ([install_ruby, install_ruby_packages is defined] is any) is true
+
 - name: Check for Reboot
   ansible.builtin.stat:
     path: "/var/run/reboot-required"

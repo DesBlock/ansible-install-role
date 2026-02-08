@@ -69,7 +69,16 @@ argument_specs:
         type: dict
         required: false
         description: ""
-      isntall_rust:
+      install_ruby:
+        type: bool
+        required: false
+        default: false
+        description: ""
+      install_ruby_packages:
+        type: list
+        required: false
+        description: ""
+      install_rust:
         type: bool
         required: false
         default: false
