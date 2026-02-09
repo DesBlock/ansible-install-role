@@ -3,7 +3,9 @@
   ansible.builtin.apt:
     name: ruby
   become: true
-  when: install_ruby is true
+  when:  
+    - install_ruby is defined
+    - install_ruby is true
 
 - name: Install Ruby Packages
   community.general.gem:
