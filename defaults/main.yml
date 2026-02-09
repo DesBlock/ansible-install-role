@@ -18,5 +18,8 @@ install_golang: false
 # Pipx Defaults
 install_pipx: false
 
+# Ruby Defaults
+install_ruby: false
+
 # Rust Defaults
 install_rust: false
