@@ -4,3 +4,7 @@
   ansible.builtin.reboot:
     msg: "Rebooting host as requested by install ansible role."
   become: true
+
+- name: Reboot_Notice
+  ansible.builtin.debug:
+    msg: "A reboot is required, please do so at your earliest convenience."
