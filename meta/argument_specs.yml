@@ -1,27 +1,34 @@
 ---
 argument_specs:
   main:
-    short_description: ""
+    short_description: "Install and configure common development tools, languages, and packages on a target system."
     options:
       install_reboot:
         type: bool
         required: false
         default: false
-        description: ""
+        description: |
+          "If true and the system requires a reboot (i.e., /var/run/reboot-required exists), the role will trigger an automatic reboot.
+          If false, it will only notify the user that a reboot is required."
+      install_path:
+        type: str
+        required: false
+        default: "{{ ansible_facts['env']['PATH'] }}"
+        description: "Base PATH environment variable to use for install_full_path."
       install_apt_autoremove:
         type: bool
         required: false
         default: false
-        description: ""
+        description: "If true, runs `apt autoremove` to remove unnecessary packages after package operations."
       install_apt_packages:
         type: list
         required: false
-        description: ""
+        description: "A list of APT packages to install."
       install_apt_update:
         type: bool
         required: false
         default: false
-        description: ""
+        description: "If true, runs `apt update` to refresh the package index before installing packages."
       install_apt_upgrade:
         type: str
         required: false
@@ -32,58 +39,80 @@ argument_specs:
           - "no"
           - "safe"
           - "yes"
-        description: ""
+        description: "Specifies whether or not to perform apt-ugprade and what type (e.g., 'dist' for distribution upgrades, 'full', 'safe', or 'no')."
       install_git:
         type: bool
         required: false
         default: false
-        description: ""
+        description: "If true, installs the Git version control system using apt."
       install_git_dir:
         type: str
         required: false
         default: "{{ ansible_facts['env']['HOME'] ~ '/Tools' }}"
-        description: ""
+        description: "The base directory where tools and git repositories will be installed."
+      install_git_binaries_dir:
+        type: str
+        required: false
+        default: "{{ install_git_dir ~ '/Binaries' }}"
+        description: "The directory where binaries downloaded from GitHub releases will be placed."
       install_git_repos:
         type: dict
         required: false
-        description: ""
+        description: |
+          "A dictionary of Git repositories to clone, keyed by repository name with values containing
+           `url`, `dest` (optional), and additional `git` module parameters."
       install_git_releases:
         type: dict
         required: false
-        description: ""
+        description: "A dictionary of GitHub release binaries to download and install, keyed by package name."
       install_golang:
         type: bool
         required: false
         default: false
-        description: ""
+        description: "If true, installs the Go programming language from the official upstream source."
+      install_golang_path:
+        type: str
+        required: false
+        default: "{{ ansible_facts['env']['HOME'] ~ '/go/bin:/usr/local/go/bin' }}"
+        description: "PATH environment variable where Go binaries will be available."
       install_golang_packages:
         type: dict
         required: false
-        description: ""
+        description: "A dictionary of Go packages to install, keyed by package name with optional `version` values."
       install_pipx:
         type: bool
         required: false
         default: false
-        description: ""
+        description: "If true, installs pipx for managing isolated Python application environments."
       install_pipx_packages:
         type: dict
         required: false
-        description: ""
+        description: "A dictionary of Python packages to install via pipx, keyed by package name with optional `source` values."
       install_ruby:
         type: bool
         required: false
         default: false
-        description: ""
+        description: "If true, installs the Ruby programming language using apt."
       install_ruby_packages:
         type: list
         required: false
-        description: ""
+        description: "A list of Ruby gems to install via `gem`."
       install_rust:
         type: bool
         required: false
         default: false
-        description: ""
+        description: "If true, installs the Rust programming language via rustup and removes any apt-installed versions."
+      install_rust_path:
+        type: str
+        required: false
+        default: "{{ ansible_facts['env']['HOME'] ~ '/.cargo/bin' }}"
+        description: "PATH directory where Rust/Cargo binaries will be available."
       install_rust_packages:
         type: list
         required: false
-        description: ""
+        description: "A list of Rust crates to install via `cargo`."
+      install_full_path:
+        type: str
+        required: false
+        default: "{{ install_path ~ ':' ~ install_golang_path ~ ':' ~ install_rust_path }}"
+        description: "Combined PATH environment variable that prepends all other custom PATH variables."
