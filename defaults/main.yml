@@ -1,6 +1,7 @@
 ---
 # General Defaults
 install_reboot: false
+install_path: "{{ ansible_facts['env']['PATH'] }}"
 
 # APT Defaults
 install_apt_autoremove: false
@@ -14,6 +15,7 @@ install_git_binaries_dir: "{{ install_git_dir ~ '/Binaries' }}"
 
 # GoLang Defaults
 install_golang: false
+install_golang_path: "{{ ansible_facts['env']['HOME'] ~ '/go/bin:/usr/local/go/bin' }}"
 
 # Pipx Defaults
 install_pipx: false
@@ -23,3 +25,7 @@ install_ruby: false
 
 # Rust Defaults
 install_rust: false
+install_rust_path: "{{ ansible_facts['env']['HOME'] ~ '/.cargo/bin' }}"
+
+# Catch-all
+install_full_path: "{{ install_path ~ ':' ~ install_golang_path ~ ':' ~ install_rust_path }}"
