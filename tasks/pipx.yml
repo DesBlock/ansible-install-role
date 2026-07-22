@@ -13,5 +13,7 @@
     name: "{{ item.key }}"
     source: "{{ item.value | default(omit) }}"
     state: latest
+  environment:
+    PATH: "{{ install_full_path }}"
   loop: "{{ install_pipx_packages | dict2items }}"
   when: install_pipx_packages is defined
