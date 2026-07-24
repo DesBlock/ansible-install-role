@@ -36,7 +36,7 @@
         version: "{{ item.value.version | default('HEAD') }}"
         depth: "{{ item.value.depth | default(omit) }}"
       loop: "{{ install_git_repos | dict2items | default([]) }}"
-      register: git_clone_results
+      register: install_git_clone_results
       become: "{{ item.value.become | default(false) }}"
-      failed_when: git_clone_results.failed and not 'Local modifications exist' in git_clone_results.msg
+      failed_when: install_git_clone_results.failed and not 'Local modifications exist' in install_git_clone_results.msg
       when: install_git_repos is defined
