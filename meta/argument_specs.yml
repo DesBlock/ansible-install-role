@@ -82,8 +82,11 @@ argument_specs:
       install_golang_batch_size:
         type: int
         required: false
-        default: 5
-        description: "An integer value to define the number of golang packages to install concurrently. If set to 1 packages are installed 1 at a time."
+        default: 1
+        description: |
+          "An integer value to define the number of golang packages to install concurrently.
+          If set to 1 packages are installed 1 at a time.
+          Without a significantly powerful machine batching does not make a large difference in speed."
       install_pipx:
         type: bool
         required: false

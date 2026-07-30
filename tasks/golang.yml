@@ -89,7 +89,7 @@
   changed_when: "'downloading' in install_golang_package_result.stderr"
   when:
     - install_golang_packages is defined
-    - install_golang_batch_size < 1
+    - install_golang_batch_size <= 1
 
 - name: "{{ 'Install GoLang Packages in batches of ' ~ install_golang_batch_size }}"
   ansible.builtin.include_tasks: golang/golang_package_install.yml
