@@ -79,6 +79,14 @@ argument_specs:
         type: dict
         required: false
         description: "A dictionary of Go packages to install, keyed by package name with optional `version` values."
+      install_golang_batch_size:
+        type: int
+        required: false
+        default: 1
+        description: |
+          "An integer value to define the number of golang packages to install concurrently.
+          If set to 1 packages are installed 1 at a time.
+          Without a significantly powerful machine batching does not make a large difference in speed."
       install_pipx:
         type: bool
         required: false

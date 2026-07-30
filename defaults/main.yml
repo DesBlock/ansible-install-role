@@ -16,6 +16,7 @@ install_git_binaries_dir: "{{ install_git_dir ~ '/Binaries' }}"
 # GoLang Defaults
 install_golang: false
 install_golang_path: "{{ ansible_facts['env']['HOME'] ~ '/go/bin:/usr/local/go/bin' }}"
+install_golang_batch_size: 1
 
 # Pipx Defaults
 install_pipx: false

@@ -1,0 +1,20 @@
+- name: Install GoLang Packages in Parallel
+  ansible.builtin.command:
+    cmd: "{{ 'go install ' ~ item.value }}"
+  environment:
+    PATH: "{{ install_full_path }}"
+  loop: "{{ install_golang_packages_batch }}"
+  async: 600
+  poll: 0
+  register: install_golang_packages_batch_jobs
+
+- name: Wait for GoLang Packages to Install
+  ansible.builtin.async_status:
+    jid: "{{ item.ansible_job_id }}"
+  loop: "{{ install_golang_packages_batch_jobs.results }}"
+  loop_control:
+    label: "{{ item.item }}"
+  register: install_golang_packages_batch_results
+  until: install_golang_packages_batch_results is finished
+  retries: 60
+  delay: 10
