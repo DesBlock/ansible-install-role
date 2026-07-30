@@ -35,6 +35,7 @@
         dest: "{{ item.value.dest | default(install_git_dir) }}/{{ item.key }}"
         version: "{{ item.value.version | default('HEAD') }}"
         depth: "{{ item.value.depth | default(omit) }}"
+      no_log: "{{ item.value.no_log | default(false) }}"
       loop: "{{ install_git_repos | dict2items | default([]) }}"
       register: install_git_clone_results
       become: "{{ item.value.become | default(false) }}"
