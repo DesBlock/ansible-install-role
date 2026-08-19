@@ -65,6 +65,11 @@ argument_specs:
         type: dict
         required: false
         description: "A dictionary of GitHub release binaries to download and install, keyed by package name."
+      install_git_pause:
+        type: int
+        required: false
+        default: 5
+        description: "Time in seconds to pause between git clones and downloading binaries from git repos. Defaults to 5 seconds."
       install_golang:
         type: bool
         required: false

@@ -19,6 +19,7 @@
       loop: "{{ install_git_releases | dict2items | default([]) }}"
       loop_control:
         loop_var: repo
+        pause: "{{ install_git_pause }}"
       when: install_git_releases is defined
 
     - name: Check for Github Release Vars that have Clone Enabled
@@ -37,6 +38,8 @@
         depth: "{{ item.value.depth | default(omit) }}"
       no_log: "{{ item.value.no_log | default(false) }}"
       loop: "{{ install_git_repos | dict2items | default([]) }}"
+      loop_control:
+        pause: "{{ install_git_pause }}"
       register: install_git_clone_results
       become: "{{ item.value.become | default(false) }}"
       failed_when: install_git_clone_results.failed and not 'Local modifications exist' in install_git_clone_results.msg
